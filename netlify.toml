@@ -14,20 +14,15 @@
   # so a Netlify default change cannot break a deploy that used to work.
   NODE_VERSION = "22"
 
-# Security headers. The page is static and loads no third-party scripts, so the
-# policy can be genuinely strict rather than aspirational.
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Content-Type-Options = "nosniff"
-    X-Frame-Options = "DENY"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-
-# Immutable hashed assets, so they can be cached hard.
-[[headers]]
-  for = "/_next/static/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
+# Headers are deliberately NOT declared here. On Netlify, header rules in this
+# file are applied by the CDN, and they do not reach HTML that the Next.js
+# runtime serves from a function: measured on the deployed site, static assets
+# received every rule while the page itself and the 404 carried only the nosniff
+# that Next.js sets on its own. X-Frame-Options and Referrer-Policy were missing
+# from every page while this block was here.
+#
+# They live in next.config.ts instead, so they travel with the app rather than
+# with the host and keep working on Vercel, Cloudflare or a Node server.
 
 # Deploy previews and branch deploys are useful for a landing page; keep them.
 [context.deploy-preview]
