@@ -26,7 +26,15 @@ const plexMono = IBM_Plex_Mono({
   display: "swap",
 });
 
+// Netlify sets URL to the site's primary address during a build, so canonical
+// and Open Graph tags resolve to the deployed origin without hardcoding it.
+// The localhost fallback keeps `npm run dev` and `npm run build` working
+// offline.
+const siteUrl = process.env.URL ?? "http://localhost:3000";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
+  alternates: { canonical: "/" },
   title: "flu-harness | Ship a Flutter app to both stores in 20 days",
   description:
     "Not another boilerplate. flu-harness is the whole assembly line, spec to store listing, with quality gates that run the same way in PowerShell, cmd and Git Bash on Windows.",
@@ -42,6 +50,8 @@ export const metadata: Metadata = {
     "play store",
   ],
   openGraph: {
+    url: "/",
+    siteName: "flu-harness",
     title: "flu-harness | Ship a Flutter app to both stores in 20 days",
     description:
       "A Flutter development harness: project wizard, 26-check doctor, and one gate plan that PowerShell, cmd and Git Bash all agree on.",

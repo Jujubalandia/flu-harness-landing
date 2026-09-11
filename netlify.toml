@@ -1,0 +1,37 @@
+# Netlify configuration for the flu-harness landing page.
+#
+# Next.js App Router, so Netlify builds it with the Next.js Runtime rather than
+# serving a static folder. The page prerenders to static HTML either way, but
+# going through the runtime keeps `next/image`, route handlers and future
+# server-side work available without a config change.
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  # Next.js 16 needs Node 20.9 or newer. Pinned to 22 LTS rather than "latest"
+  # so a Netlify default change cannot break a deploy that used to work.
+  NODE_VERSION = "22"
+
+# Security headers. The page is static and loads no third-party scripts, so the
+# policy can be genuinely strict rather than aspirational.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Immutable hashed assets, so they can be cached hard.
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Deploy previews and branch deploys are useful for a landing page; keep them.
+[context.deploy-preview]
+  command = "npm run build"
+
+[context.branch-deploy]
+  command = "npm run build"
