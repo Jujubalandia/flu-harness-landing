@@ -2,6 +2,9 @@
 
 The landing page for [flu-harness](https://github.com/Jujubalandia/flu-harness).
 
+**Live at <https://flu-harness.netlify.app>**, deployed from this repository
+on Netlify. Pushing to `main` redeploys.
+
 Next.js App Router, one page, no database, no CMS. Content lives in `app/content.ts`.
 
 ## Running it
@@ -88,9 +91,16 @@ grep -c 'heroWink\|startKicker' app/content.ts
 
 ## Deploying
 
-This is a standalone repository, so the Vercel defaults work: import it, and no
-root-directory or build-command override is needed. No environment variables are
-required.
+`netlify.toml` in this repository pins the build: the Next.js Runtime, Node 22
+LTS rather than whatever the platform default happens to be, and no header
+rules. Headers live in `next.config.ts` on purpose, and `netlify.toml` records
+why: rules declared there are applied by the CDN and do not reach HTML that the
+Next.js runtime serves from a function, so X-Frame-Options and Referrer-Policy
+were silently missing from every page while the config looked correct.
+
+No environment variables are required. `process.env.URL`, which Netlify sets
+during a build, feeds `metadataBase` so canonical and Open Graph tags point at
+the deployed origin.
 
 The page prerenders to static HTML, so plain static hosting works too:
 
